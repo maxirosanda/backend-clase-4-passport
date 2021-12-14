@@ -11,7 +11,7 @@ import routesUsers  from './src/routes/routesUsers.js'
 import { ConnectPassport } from './config/auth.js'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
-
+import passport from 'passport'
 const app = express()
 
 const __dirname = path.resolve();
@@ -54,7 +54,7 @@ app.use(session({
   saveUninitialized: false,
 
   store: MongoStore.create({
-    mongoUrl:config.BASE,
+    mongoUrl:"mongodb://localhost:27017/ecommerce",
     mongoOptions: advancedOptions,
     collectionName: 'sessions',
     ttl: 10 * 60

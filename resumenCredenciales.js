@@ -95,18 +95,19 @@ npm i passport-local@1.0.0
 mongoose.set('useCreateIndex', true)
 const LocalStrategy = Local.Strategy
 
-const isValidPassword = function (user, password) {
+const isValidPassword = (user, password) => {
   return bcrypt.compareSync(password, user.password)
 }
-const createHash = function (password) {
+const createHash =(password) => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
 }
 
-export const ConectarPassport = () => {
+export const ConnectPassport = () => {
+
   passport.use('login', new LocalStrategy({ passReqToCallback: true },
-    function (req, username, password, done) {
+  (req, username, password, done) => {
       User.findOne({ username: username },
-        function (err, user) {
+            (err, user) => {
           if (err) return done(err)
           if (!user) return done(null, false)
           if (!isValidPassword(user, password)) return done(null, false)
@@ -116,11 +117,11 @@ export const ConectarPassport = () => {
   )
 
   passport.use('register', new LocalStrategy({ passReqToCallback: true },
-    function (req, username, password, done) {
+     (req, username, password, done) => {
 
-      const findOrCreateUser = function () {
+      const findOrCreateUser = () => {
         User.findOne({ username: username },
-          function (err, user) {
+           (err, user) => {
             if (err) return done(err)
             if (user) {
               return done(null, false)
@@ -130,7 +131,7 @@ export const ConectarPassport = () => {
               newUser.password = createHash(password)
               newUser.name=req.body.name 
 
-              newUser.save(function (err) {
+              newUser.save((err) => {
                 if (err) { throw err }
                 return done(null, newUser)
               })
@@ -142,11 +143,11 @@ export const ConectarPassport = () => {
     })
   )
 
-  passport.serializeUser(function (user, done) {
+  passport.serializeUser((user, done) => {
     done(null, user._id)
   })
-  passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
+  passport.deserializeUser((id, done) => {
+    User.findById(id,(err, user) => {
       if (err) {
         console.log(err.stack)
       }
@@ -155,6 +156,7 @@ export const ConectarPassport = () => {
   })
 }
 
+
 */
 // dentro de server importar el archivo auth.js de la carpeta config
 //iniciar la funcion en el server despues de la coneccion la base de datos =>
@@ -162,9 +164,10 @@ export const ConectarPassport = () => {
 //app.use(passport.session())
 
 
-// importar los modulos =>
+// importar los modulos en el server.js =>
 //import session from 'express-session'
 //import MongoStore from 'connect-mongo'
+//import passport from 'passport'
 //instalar los modulos
 //npm i express-session@1.17.2
 // npm i connect-mongo@4.5.0
@@ -178,7 +181,7 @@ app.use(session({
   saveUninitialized: false,
 
   store: MongoStore.create({
-    mongoUrl:config.BASE,
+    mongoUrl:"mongodb://localhost:27017/ecommerce",
     mongoOptions: advancedOptions,
     collectionName: 'sessions',
     ttl: 10 * 60
@@ -192,7 +195,7 @@ app.use(session({
 //importante cambiar en user.js del models el name "email" por "username"
 //modificar el codigo en general para poder usar passport 
 //revisar el codigo para eliminar import innecesarios
-//agregar la funcion para cerrar sesion en el controllerUser.js
+//agregar la funcion para cerrar sesion en el controllerUser.js y las ruta
 
 /*
 export const logout = async (req, res) => {
@@ -200,7 +203,7 @@ export const logout = async (req, res) => {
       const user = await User.find({ username: req.user.username }).lean()
       await req.session.destroy(err => {
         if (err) return err
-        res.status(200).redirect('/ingresar')
+        res.status(200).redirect('/login')
       })
     } catch (e) { console.log(e) }
   }

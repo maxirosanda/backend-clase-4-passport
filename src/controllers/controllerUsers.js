@@ -4,21 +4,24 @@ export const viewLogin = (req,res) =>{
 }
 
 export const login = ( req,res) =>{
-    console.log(req.body)
     res.status(200).redirect('/productos')
 }
 
 export const viewRegister = (req,res) =>{
     res.status(200).render('register')
 }
-export const register = async ( req,res) =>{
-    try{ 
-        console.log(req.body)
-        const user = await User(req.body)
-        user.save()
+export const register = ( req,res) =>{
+
         res.status(200).redirect('/productos')
-    }catch(e){
-        console.log(e)
-    }
-    
+
 }
+
+export const logout = async (req, res) => {
+    try {
+      const user = await User.find({ username: req.user.username }).lean()
+      await req.session.destroy(err => {
+        if (err) return err
+        res.status(200).redirect('/login')
+      })
+    } catch (e) { console.log(e) }
+  }

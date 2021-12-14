@@ -3,6 +3,7 @@ import Product from '../models/products.js'
 
 export const viewProducts = async (req,res)=>{
   try {
+    console.log(req.user)
    const products = await Product.find({}).lean()
    res.status(200).render('products',{products:products})
   } 
